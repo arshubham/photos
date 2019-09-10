@@ -154,6 +154,7 @@ public class LibraryWindow : AppWindow {
 
         top_display = new TopDisplay ();
 
+
         var import_menu_item = new Gtk.MenuItem ();
         import_menu_item.related_action = get_common_action ("CommonFileImport");
         import_menu_item.label = _("_Import From Folder…");
@@ -204,12 +205,24 @@ public class LibraryWindow : AppWindow {
         // TODO: Calc according to layout's size, to give sidebar a maximum width
         notebook.width_request = PAGE_MIN_WIDTH;
 
+        var toast = new Granite.Widgets.Toast ("Consider snoozing nightlight for optimal experience.");
+
+        var overlay = new Gtk.Overlay ();
+        overlay.add_overlay (notebook);
+        overlay.add_overlay (toast);
+
+        Timeout.add (10000, () => {
+            toast.send_notification ();
+            return false;
+        });
+
+
         metadata_sidebar = new MetadataView ();
         metadata_sidebar.width_request = METADATA_SIDEBAR_MIN_WIDTH;
 
         right_client_paned = new Gtk.Paned (Gtk.Orientation.HORIZONTAL);
         right_client_paned.width_request = METADATA_SIDEBAR_MIN_WIDTH;
-        right_client_paned.pack1 (notebook, true, false);
+        right_client_paned.pack1 (overlay, true, false);
         right_client_paned.pack2 (metadata_sidebar, false, false);
 
         right_vbox = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
